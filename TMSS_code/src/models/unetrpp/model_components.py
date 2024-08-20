@@ -87,29 +87,17 @@ class TransformerBlock(nn.Module):
         B, C, H, W, D = x.shape
         # print("XSHAPE  ",x.shape)
         x = x.reshape(B, C, H * W * D).permute(0, 2, 1)
-        # 重排x的形状
-        # Rearrange the shape of the x
 
         if self.pos_embed is not None:
             # print ("x",x.shape)
             # print("pos_embed",self.pos_embed.shape)
             x = x + self.pos_embed
-        # 如果定义了pos_embed，将其添加到 x 中
-        # if define pos_embed， add it to x
         attn = x + self.gamma * self.epa_block(self.norm(x))
-        # 将  x 通过层归一化和  EPA 模块，然后用 gamma 进行缩放并加到 x上
-        # Normalize x and put into EPA module, then scale it with gamma and add it to x
 
         attn_skip = attn.reshape(B, H, W, D, C).permute(0, 4, 1, 2, 3)  # (B, C, H, W, D)
-        # 重排注意力输出的形状
-        # Rearrange the shape of the attn
         attn = self.conv51(attn_skip)
-        # 将重塑后的注意力输出通过两个 UnetResBlock 卷积块处理。
-        # The reshaped attention output is processed through two UnetResBlock convolution blocks.
         attn = self.conv52(attn)
         x = attn_skip + self.conv8(attn)
-        # 将经过卷积块处理的输出通过 conv8模块，然后与跳跃连接的输出相加。
-        # Pass the output through the conv8 module and add it to the jump connected output.
         return x
 
 
@@ -199,18 +187,12 @@ class UnetrPPEncoder(nn.Module):
         super().__init__()
 
         self.downsample_layers = nn.ModuleList()  # stem and 3 intermediate downsampling conv layers
-        # 定义self.downsample_layers,self.downsample_layers包含一个初始下采样层（stem layer）和三个中间下采样层。
-        # define self.downsample_layers, self.downsample_layers consists of an initial  stem layer
-        # and three intermediate downsampling layers.
-
         stem_layer = nn.Sequential(
             get_conv_layer(spatial_dims, in_channels, dims[0], kernel_size=(4, 4, 4), stride=(4, 4, 4),
                            dropout=dropout, conv_only=True, ),
             get_norm_layer(name=("group", {"num_groups": in_channels}), channels=dims[0]),
         )
         self.downsample_layers.append(stem_layer)
-        # 初始下采样层（stem layer）使用了 get_conv_layer 和 get_norm_layer 创建了一个卷积层和一个归一化层。
-        # The initial stem layer uses get_conv_layer and get_norm_layer to create a convolutional layer and a normalization layer.
         for i in range(3):
             downsample_layer = nn.Sequential(
                 get_conv_layer(spatial_dims, dims[i], dims[i + 1], kernel_size=(2, 2, 2), stride=(2, 2, 2),
@@ -218,9 +200,7 @@ class UnetrPPEncoder(nn.Module):
                 get_norm_layer(name=("group", {"num_groups": dims[i]}), channels=dims[i + 1]),
             )
             self.downsample_layers.append(downsample_layer)
-        # 中间下采样层也使用了类似的方法，但卷积层的输入和输出通道数不同。
-        # A similar approach is used for the intermediate downsampling layer,
-        # but the convolutional layer has a different number of input and output channels.
+
         self.stages = nn.ModuleList()  # 4 feature resolution stages, each consisting of multiple Transformer blocks
         for i in range(4):
             stage_blocks = []
@@ -231,14 +211,8 @@ class UnetrPPEncoder(nn.Module):
                                                      proj_size=proj_size[i], num_heads=num_heads,
                                                      dropout_rate=transformer_dropout_rate, pos_embed=True))
             self.stages.append(nn.Sequential(*stage_blocks))
-        # self.stages包含四个阶段，每个阶段包含多个 Transformer 模块。
-        # self.stages consists of four phases, each containing multiple Transformer modules.
         self.hidden_states = []
         self.apply(self._init_weights)
-        # self.hidden_states 用于存储隐藏状态。
-        # self.hidden_states use to  store  hidden states
-        # self.apply(self._init_weights) 用于初始化网络权重。
-        # self.apply(self._init_weights) use to initialize network weights
 
     def _init_weights(self, m):
         if isinstance(m, (nn.Conv2d, nn.Linear)):
@@ -250,18 +224,12 @@ class UnetrPPEncoder(nn.Module):
             nn.init.constant_(m.weight, 1.0)
 
     def forward_features(self, x):
-        # 实现了一个前向传播过程，通过多个下采样层和Transformer模块对输入数据进行处理，并在每个阶段记录中间的隐藏状态。
         hidden_states = []
 
         x = self.downsample_layers[0](x)
         x = self.stages[0](x)
+
         hidden_states.append(x)
-        # 应用第一个下采样层。
-        # 应用第一个Transformer模块阶段。
-        # 将第一个阶段的输出添加到 hidden_states  中。
-        # Apply the first downsampled layer
-        # Apply the first Transformer module stage.
-        # Add the output of the first stage to hidden_states.
 
         for i in range(1, 4):
             x = self.downsample_layers[i](x)
@@ -269,8 +237,6 @@ class UnetrPPEncoder(nn.Module):
             # if i == 3:  # Reshape the output of the last stage
             #     x = einops.rearrange(x, "b c h w d -> b (h w d) c")
             hidden_states.append(x)
-            # 对每个阶段（从第2到第4阶段）重复以上步骤：
-            # Repeat the above steps for the each stage (from stage 2 to stage 4).
         return x, hidden_states
 
     def forward(self, x):
@@ -350,11 +316,5 @@ class UnetrUpBlock(nn.Module):
         out = self.transp_conv(inp)
         out = out + skip
         out = self.decoder_block[0](out)
-        # 使用转置卷积层对输入进行上采样。
-        # 将上采样后的输出与跳跃连接的特征图相加。
-        # 将结果通过解码器块进行处理。
-        # Upsample the input using a transposed convolutional layer.
-        # Add the upsampled output to the feature map of the jump connection.
-        # Process the result through a decoder block.
 
         return out

@@ -57,7 +57,7 @@ class HecktorDataset(Dataset):
 
     def __init__(self,
                  root_directory: str,
-                 clinical_data_path: str,  # data_dir:  /home/sribd/Desktop/TMSS_EC_Sorted
+                 clinical_data_path: str,
                  patch_size: int = 50,
                  time_bins: int = 14,
                  cache_dir: str = "data_cropped/data_cache/",
@@ -85,14 +85,16 @@ class HecktorDataset(Dataset):
 
         print('path in make_data:   ', path)
         df = pd.read_csv(path + '/EC.csv')
+
         # try:
         #    df = pd.read_csv(path + '/before.csv')
         # except:
         #    df = path
+
         clinical_data = df
 
         # clinical_data = clinical_data.rename(columns={"OS": "event", "OS(m)": "time"})
-        # 标准化处理
+
         clinical_data["HGB_Before_Treatment"] = scale(clinical_data["HGB_Before_Treatment"])
         clinical_data["HGB_After_Treatment"] = scale(clinical_data["HGB_After_Treatment"])
         clinical_data["MWT_Before_Treatment"] = scale(clinical_data["MWT_Before_Treatment"])
@@ -110,14 +112,11 @@ class HecktorDataset(Dataset):
                                        columns=["Gender", "ECOG", "Smoking_and_Alcohol", "Family_History", "Location",
                                                 "T", "N", "Supraclavicular_LN", "TNM", "Treatment_Response", "PTV_Dose",
                                                 "GTV_Dose", "Concurrent_Chemotherapy"], drop_first=False, )
-        # 转为独热编码
+
         columns_to_drop = ['LC', 'LC_m', 'LRFS', 'LRFS_m', 'OS', 'OS_m']
         clinical_data.drop(columns_to_drop, axis=1, inplace=True)
-
-        # 填充缺失值
         columns_to_fill = ['Age', 'TL']
         clinical_data[columns_to_fill] = clinical_data[columns_to_fill].fillna(clinical_data[columns_to_fill].mean())
-        # 填充缺失值
 
         # clinical_data["Age"] = scale(clinical_data["Age"])
 
@@ -181,14 +180,19 @@ class HecktorDataset(Dataset):
             The input-target pair.
         """
         clin_name = self.clinical_data.iloc[idx]['name']
+
         try:  # training data
             # clin_var_data = self.clinical_data.drop(["target_binary", 'time', 'event', 'Study ID'], axis=1) # single event
             clin_var_data = self.clinical_data.drop(['name', 'event', 'time'], axis=1)
         except:  # test data
             clin_var_data = self.clinical_data.drop(['name'], axis=1)
+
         clin_var = clin_var_data.iloc[idx].to_numpy(dtype='float32')
+
         target = self.y[idx]
+
         labels = self.clinical_data.iloc[idx].to_dict()
+
         subject_id = self.clinical_data.iloc[idx]["name"]
         # path = self.cache_path, f"{subject_id}_ct.nii.gz")
         #         print('hi:', path)
@@ -196,27 +200,35 @@ class HecktorDataset(Dataset):
         # image = sitk.ReadImage(path)
         # if self.transform is not None:
         #     image = self.transform(image)
+
         sample = dict()
+
         id_ = self.cache_path[idx][0].parent.stem
+
         sample['id'] = id_
         img = [self.read_data(self.cache_path[idx][i])[:, :, :] for i in range(self.num_of_seqs)]
         # if img[0].shape[2] != 48 or img[1].shape[2] != 48:
         #     print(clin_name)
+
         try:
             img = np.stack(img, axis=-1)  # 336 336 64 batch*2
         except:
             print(img[0].shape, img[1].shape, clin_name)
         img = rearrange(img, 'h w d c -> c h w d')
         sample['input'] = img  # np.expand_dims(img, axis=0)
+
         mask = self.read_data(self.cache_path[idx][-1])[:, :, :]
         # print(mask.shape)
         mask = np.expand_dims(mask, axis=3)  # 336 336 64 batch
         mask = rearrange(mask, 'h w d c->c h w d')
         sample['target_mask'] = mask
+
         # print('input  ', sample['input'].shape)                 #  (160, 160, 64, 1)
         # print('mask   ', sample['target_mask'].shape)           #  (160, 160, 64, 1)
+
         if self.transforms:
             sample = self.transforms(sample)
+
         return (sample, clin_var), target, labels
 
     def __len__(self) -> int:

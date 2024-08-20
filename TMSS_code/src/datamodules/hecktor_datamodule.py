@@ -79,9 +79,9 @@ class HECKTORDataModule(LightningDataModule):
                                       transform=self.train_transforms,
                                       cache_dir=self.hparams["cache_dir"],
                                       num_workers=self.hparams["num_workers"])
-        # data_dir:  /home/sribd/Desktop/TMSS_EC_Sorted
 
         df = pd.read_csv('/home/sribd/Desktop/TMSS_EC_Sorted/EC.csv')
+
         kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=5820222)
 
         train_idx = {}
@@ -91,6 +91,7 @@ class HECKTORDataModule(LightningDataModule):
         for i, j in kf.split(df, df['event']):
             train_idx[key] = i
             test_idx[key] = j
+
             key += 1
 
         print(test_idx[self.Fold])

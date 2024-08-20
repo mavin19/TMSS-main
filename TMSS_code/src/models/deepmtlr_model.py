@@ -59,6 +59,7 @@ class DEEP_MTLR(LightningModule):
             #                ), strict=False)
             self.init_params(self.model)
 
+
             # checkpoint = torch.load('/home/sribd/Desktop/TMSS_EC_Sorted/model_final_checkpoint.model')
             # from collections import OrderedDict
             #
@@ -136,22 +137,26 @@ class DEEP_MTLR(LightningModule):
         # print('model.py  step  logits  ', logits)
         # print("pred mask", pred_mask.shape)
         # print("target mask ", sample['target_mask'].shape)
+
         loss_mask = self.loss_mask(pred_mask[0], sample['target_mask']) + self.loss_mask(pred_mask[1], sample[
             'target_mask']) + self.loss_mask(pred_mask[2], sample['target_mask'])
-        # ------------ boundary loss ---------------------
-        dist_map_label: list[Tensor] = distance_map_array_gen(sample['target_mask'].cpu().numpy())
-        pred_logits: Tensor = pred_mask[0]
-        pred_probs: Tensor = F.sigmoid(pred_logits)
-        boundary_loss_fun = BoundaryLoss(idc=[0])
-        boundary_loss = boundary_loss_fun(pred_probs.to(pred_logits.device), dist_map_label.to(pred_logits.device))
 
-        alpha = 0.001
-        max_epochs = 100
-        alpha_increase = calculate_alpha(self.current_epoch, max_epochs)
-        alpha = alpha + alpha_increase
-        loss_segment = (1 - alpha) * loss_mask + alpha * boundary_loss  # new name: loss_mask->loss_segment
+        # ------------ boundary loss ---------------------
+        # dist_map_label: list[Tensor] = distance_map_array_gen(sample['target_mask'].cpu().numpy())
+        # pred_logits: Tensor = pred_mask[0]
+        # pred_probs: Tensor = F.sigmoid(pred_logits)
+        # boundary_loss_fun = BoundaryLoss(idc=[0])
+        # boundary_loss = boundary_loss_fun(pred_probs.to(pred_logits.device), dist_map_label.to(pred_logits.device))
+        #
+        # alpha = 0.001
+        # max_epochs = 100
+        # alpha_increase = calculate_alpha(self.current_epoch, max_epochs)
+        # alpha = alpha + alpha_increase
+        # loss_segment = (1 - alpha) * loss_mask + alpha * boundary_loss  # new name:  loss_segment
         # ----------------------------------------
+
         loss_mtlr = mtlr_neg_log_likelihood(logits, y.float(), self.model, self.hparams['C1'], average=True)
+        # loss_mtlr = 0.0
 
         if train == 0:
             self.writer.add_scalar("train_loss_mask", loss_mask, self.train_step_count)
@@ -164,8 +169,11 @@ class DEEP_MTLR(LightningModule):
 
         if self.train_step_count < 1000:
             loss_gamma = 1
+        elif self.train_step_count < 1000:
+            loss_gamma = 0.99
         else:
             loss_gamma = 0.99
+        # loss_gamma = 0.99
         loss = (1 - loss_gamma) * loss_mtlr + loss_gamma * loss_mask  # Final Loss
         # loss = (1 - loss_gamma) * loss_mtlr + loss_gamma * loss_segment
         # loss = loss_mtlr
@@ -175,6 +183,7 @@ class DEEP_MTLR(LightningModule):
         #     loss = loss_mask
         # else :
         #     loss = (1 - loss_gamma) * loss_mtlr + loss_gamma * loss_mask
+
         return loss, logits, y, labels, pred_mask[0], sample['target_mask']  # pred_mask[0]
 
     def training_step(self, batch: Any, batch_idx: int):
