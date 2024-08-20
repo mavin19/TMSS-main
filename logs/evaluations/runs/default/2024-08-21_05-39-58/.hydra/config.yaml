@@ -1,0 +1,65 @@
+original_work_dir: ${hydra:runtime.cwd}
+data_dir: /data/datasets/TMSS_EC_Sorted
+print_config: true
+ignore_warnings: true
+seed: 786
+name: default
+ckpt_path: /home/koung/Main-TMSS/TMSS_code/logs/experiments/runs/default/2024-08-20_22-33-44/checkpoints/epoch_056.ckpt
+datamodule:
+  _target_: src.datamodules.hecktor_datamodule.HECKTORDataModule
+  root_dir: ${original_work_dir}
+  data_dir: ${data_dir}
+  cache_dir: ${data_dir}
+  Fold: 1
+  patch_sz: 80
+  batch_size: 4
+  dataset_mean: 0
+  dataset_std: 1
+  num_workers: 1
+  pin_memory: false
+  time_bins_data: ${model.time_bins}
+model:
+  _target_: src.models.deepmtlr_model.DEEP_MTLR
+  model: UNETR
+  dense_factor: 3
+  n_dense: 3
+  dropout: 0.25
+  C1: 100
+  lr: 0.002
+  weight_decay: 0.001
+  time_bins: 8
+  loss_gamma: 0.9
+  k1: 3
+  k2: 5
+  step: 50
+  patch_size: 8
+  hidden_size: 256
+  mlp_dim: 1024
+  num_layers: 6
+  num_heads: 8
+callbacks:
+  model_checkpoint:
+    _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    monitor: val/ci
+    mode: max
+    save_top_k: 1
+    save_last: true
+    verbose: false
+    dirpath: checkpoints/
+    filename: epoch_{epoch:03d}
+    auto_insert_metric_name: false
+  early_stopping:
+    _target_: pytorch_lightning.callbacks.EarlyStopping
+    monitor: val/ci
+    mode: max
+    patience: 100
+    min_delta: 0
+  model_summary:
+    _target_: pytorch_lightning.callbacks.RichModelSummary
+    max_depth: -1
+  rich_progress_bar:
+    _target_: pytorch_lightning.callbacks.RichProgressBar
+trainer:
+  _target_: pytorch_lightning.Trainer
+  min_epochs: 1
+  max_epochs: 100

@@ -1,0 +1,55 @@
+# @package _global_
+
+# specify here default evaluation configuration
+defaults:
+  - _self_
+  - datamodule: hecktor_datamodule.yaml # choose the datamodule for evaluation
+  - model: hecktor_model.yaml
+  - callbacks: default.yaml
+  - logger: null
+  - trainer: default.yaml
+  - log_dir: evaluation.yaml
+
+  - experiment: null
+
+  # enable color logging
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+original_work_dir: ${hydra:runtime.cwd}
+
+data_dir:  /data/datasets/TMSS_EC_Sorted
+
+
+print_config: True
+
+ignore_warnings: True
+
+seed: 786
+
+name: "default"
+
+# passing checkpoint path is necessary
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/default/2023-11-01_22-47-21_0.72-0.677/checkpoints/epoch_072.ckpt"   # 0.722 0.677
+
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/last090922.ckpt"  # 0.7138  0.6885
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/last090922_2.ckpt"  # 0.7177  0.6915
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/last090922_3.ckpt"  # 0.7144  0.6906
+
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/default/2023-11-03_22-48-59/checkpoints/epoch_035.ckpt" # 0.729pwd  0.690
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/default/2023-11-03_22-37-49/checkpoints/last.ckpt"  #  0.71385  0.6985
+#ckpt_path: "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/default/2023-11-04_10-10-45/checkpoints/last.ckpt"   # 0.71578  0.70658
+
+#ckpt_path:  "/home/sribd/Desktop/tmss/data/EC/ec-cancer-tmss-reshape-old/tmss_miccai/logs/experiments/runs/default/2023-11-04_10-13-29/checkpoints/epoch_060.ckpt"  # 0.72075  0.70615
+
+
+
+ckpt_path:  "/home/koung/Main-TMSS/TMSS_code/logs/experiments/runs/default/2024-08-20_22-33-44/checkpoints/epoch_056.ckpt"
+
+
+
+#
+#st/ci': 0.6956401766004415,
+# 'test/dice': 0.7010080814361572,
+# 'test/loss': 0.9321253895759583}
+

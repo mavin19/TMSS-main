@@ -1,0 +1,13 @@
+[2024-08-20 21:27:15,708][src.utils][INFO] - Disabling python warnings! <config.ignore_warnings=True>
+[2024-08-20 21:27:15,709][src.utils][INFO] - Printing config tree with Rich! <config.print_config=True>
+[2024-08-20 21:27:15,711][src.utils][INFO] - Field 'logger' not found in config
+[2024-08-20 21:27:15,768][lightning_fabric.utilities.seed][INFO] - Seed set to 786
+[2024-08-20 21:27:15,772][src.training_pipeline][INFO] - Instantiating datamodule <src.datamodules.hecktor_datamodule.HECKTORDataModule>
+[2024-08-20 21:27:17,236][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+[2024-08-20 21:27:17,237][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
+[2024-08-20 21:27:21,818][src.training_pipeline][INFO] - Instantiating model <src.models.deepmtlr_model.DEEP_MTLR>
+[2024-08-20 21:27:27,125][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.ModelCheckpoint>
+[2024-08-20 21:27:27,132][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.EarlyStopping>
+[2024-08-20 21:27:27,134][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichModelSummary>
+[2024-08-20 21:27:27,135][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichProgressBar>
+[2024-08-20 21:27:27,137][src.training_pipeline][INFO] - Instantiating trainer <pytorch_lightning.Trainer>

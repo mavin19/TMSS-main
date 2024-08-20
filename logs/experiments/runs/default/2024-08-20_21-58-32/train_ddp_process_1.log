@@ -1,0 +1,6 @@
+[2024-08-20 21:58:50,829][lightning_fabric.utilities.seed][INFO] - [rank: 1] Seed set to 786
+[2024-08-20 21:58:52,164][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+[2024-08-20 21:58:52,165][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
+[2024-08-20 21:59:01,327][lightning_fabric.utilities.seed][INFO] - [rank: 1] Seed set to 786
+[2024-08-20 21:59:01,338][lightning_fabric.utilities.distributed][INFO] - Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/2
+[2024-08-20 21:59:02,256][pytorch_lightning.accelerators.cuda][INFO] - LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1]

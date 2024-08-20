@@ -1,0 +1,28 @@
+[2024-08-20 22:26:56,194][src.utils][INFO] - Disabling python warnings! <config.ignore_warnings=True>
+[2024-08-20 22:26:56,195][src.utils][INFO] - Printing config tree with Rich! <config.print_config=True>
+[2024-08-20 22:26:56,196][src.utils][INFO] - Field 'logger' not found in config
+[2024-08-20 22:26:56,231][lightning_fabric.utilities.seed][INFO] - Seed set to 786
+[2024-08-20 22:26:56,233][src.training_pipeline][INFO] - Instantiating datamodule <src.datamodules.hecktor_datamodule.HECKTORDataModule>
+[2024-08-20 22:26:57,201][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+[2024-08-20 22:26:57,201][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
+[2024-08-20 22:27:00,030][src.training_pipeline][INFO] - Instantiating model <src.models.deepmtlr_model.DEEP_MTLR>
+[2024-08-20 22:27:03,603][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.ModelCheckpoint>
+[2024-08-20 22:27:03,607][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.EarlyStopping>
+[2024-08-20 22:27:03,607][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichModelSummary>
+[2024-08-20 22:27:03,608][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichProgressBar>
+[2024-08-20 22:27:03,609][src.training_pipeline][INFO] - Instantiating trainer <pytorch_lightning.Trainer>
+[2024-08-20 22:27:03,636][pytorch_lightning.utilities.rank_zero][INFO] - Trainer already configured with model summary callbacks: [<class 'pytorch_lightning.callbacks.rich_model_summary.RichModelSummary'>]. Skipping setting a default `ModelSummary` callback.
+[2024-08-20 22:27:03,665][pytorch_lightning.utilities.rank_zero][INFO] - GPU available: True (cuda), used: True
+[2024-08-20 22:27:03,665][pytorch_lightning.utilities.rank_zero][INFO] - TPU available: False, using: 0 TPU cores
+[2024-08-20 22:27:03,665][pytorch_lightning.utilities.rank_zero][INFO] - HPU available: False, using: 0 HPUs
+[2024-08-20 22:27:03,666][src.training_pipeline][INFO] - Logging hyperparameters!
+[2024-08-20 22:27:03,666][src.training_pipeline][INFO] - Starting training!
+[2024-08-20 22:27:03,760][pytorch_lightning.utilities.rank_zero][INFO] - You are using a CUDA device ('NVIDIA GeForce RTX 3090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+[2024-08-20 22:27:03,760][lightning_fabric.utilities.seed][INFO] - [rank: 0] Seed set to 786
+[2024-08-20 22:27:03,762][lightning_fabric.utilities.distributed][INFO] - Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/2
+[2024-08-20 22:27:19,184][pytorch_lightning.utilities.rank_zero][INFO] - ----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 2 processes
+----------------------------------------------------------------------------------------------------
+
+[2024-08-20 22:27:20,401][pytorch_lightning.accelerators.cuda][INFO] - LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1]

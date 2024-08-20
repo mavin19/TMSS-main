@@ -1,0 +1,6 @@
+defaults:
+  - default.yaml
+
+# gpus: 4
+strategy: ddp_find_unused_parameters_true
+sync_batchnorm: True

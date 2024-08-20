@@ -1,0 +1,19 @@
+[2024-08-20 21:34:16,395][src.utils][INFO] - Disabling python warnings! <config.ignore_warnings=True>
+[2024-08-20 21:34:16,396][src.utils][INFO] - Printing config tree with Rich! <config.print_config=True>
+[2024-08-20 21:34:16,398][src.utils][INFO] - Field 'logger' not found in config
+[2024-08-20 21:34:16,449][lightning_fabric.utilities.seed][INFO] - Seed set to 786
+[2024-08-20 21:34:16,453][src.training_pipeline][INFO] - Instantiating datamodule <src.datamodules.hecktor_datamodule.HECKTORDataModule>
+[2024-08-20 21:34:17,880][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+[2024-08-20 21:34:17,881][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
+[2024-08-20 21:34:22,572][src.training_pipeline][INFO] - Instantiating model <src.models.deepmtlr_model.DEEP_MTLR>
+[2024-08-20 21:34:28,395][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.ModelCheckpoint>
+[2024-08-20 21:34:28,403][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.EarlyStopping>
+[2024-08-20 21:34:28,404][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichModelSummary>
+[2024-08-20 21:34:28,406][src.training_pipeline][INFO] - Instantiating callback <pytorch_lightning.callbacks.RichProgressBar>
+[2024-08-20 21:34:28,408][src.training_pipeline][INFO] - Instantiating trainer <pytorch_lightning.Trainer>
+[2024-08-20 21:34:28,450][pytorch_lightning.utilities.rank_zero][INFO] - Trainer already configured with model summary callbacks: [<class 'pytorch_lightning.callbacks.rich_model_summary.RichModelSummary'>]. Skipping setting a default `ModelSummary` callback.
+[2024-08-20 21:34:28,490][pytorch_lightning.utilities.rank_zero][INFO] - GPU available: True (cuda), used: True
+[2024-08-20 21:34:28,491][pytorch_lightning.utilities.rank_zero][INFO] - TPU available: False, using: 0 TPU cores
+[2024-08-20 21:34:28,491][pytorch_lightning.utilities.rank_zero][INFO] - HPU available: False, using: 0 HPUs
+[2024-08-20 21:34:28,491][src.training_pipeline][INFO] - Logging hyperparameters!
+[2024-08-20 21:34:28,492][src.training_pipeline][INFO] - Starting training!
