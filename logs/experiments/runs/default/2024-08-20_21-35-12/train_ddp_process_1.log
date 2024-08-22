@@ -1,5 +1,0 @@
-[2024-08-20 21:35:27,224][lightning_fabric.utilities.seed][INFO] - [rank: 1] Seed set to 786
-[2024-08-20 21:35:28,578][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
-[2024-08-20 21:35:28,579][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
-[2024-08-20 21:35:38,153][lightning_fabric.utilities.seed][INFO] - [rank: 1] Seed set to 786
-[2024-08-20 21:35:38,165][lightning_fabric.utilities.distributed][INFO] - Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/2
