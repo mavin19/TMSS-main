@@ -1,8 +1,0 @@
-[2024-08-20 21:23:38,425][src.utils][INFO] - Disabling python warnings! <config.ignore_warnings=True>
-[2024-08-20 21:23:38,425][src.utils][INFO] - Printing config tree with Rich! <config.print_config=True>
-[2024-08-20 21:23:38,425][src.utils][INFO] - Field 'logger' not found in config
-[2024-08-20 21:23:38,457][lightning_fabric.utilities.seed][INFO] - Seed set to 786
-[2024-08-20 21:23:38,459][src.training_pipeline][INFO] - Instantiating datamodule <src.datamodules.hecktor_datamodule.HECKTORDataModule>
-[2024-08-20 21:23:39,420][numexpr.utils][INFO] - Note: NumExpr detected 40 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
-[2024-08-20 21:23:39,420][numexpr.utils][INFO] - NumExpr defaulting to 8 threads.
-[2024-08-20 21:23:41,811][src.training_pipeline][INFO] - Instantiating model <src.models.deepmtlr_model.DEEP_MTLR>
