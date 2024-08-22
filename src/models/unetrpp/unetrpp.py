@@ -154,7 +154,7 @@ class UNETR_PP(nn.Module):
             self.mtlr_fc = nn.Sequential(*fc_layers)    # before input
             self.mtlr = MTLR(64, hparams['time_bins'])
 
-        self.EHR_proj_encoder = nn.Sequential(nn.Linear(38, 160 * 160))
+        self.EHR_proj_encoder = nn.Sequential(nn.Linear(512, 160 * 160))
 
         # self.img_proj = nn.Sequential(nn.Linear(1638400, 64), nn.BatchNorm1d(64), nn.Dropout(0.25),
         #                              # nn.Linear(64, 128), nn.BatchNorm1d(128), nn.Dropout(0.25),
@@ -168,7 +168,7 @@ class UNETR_PP(nn.Module):
         #                               nn.Linear(32, 64), nn.LeakyReLU(), nn.BatchNorm1d(64),
         #                               nn.Linear(64, 64), nn.LeakyReLU(), )
 
-        self.EHR_proj = nn.Sequential(nn.Linear(38, 32), nn.LeakyReLU(), nn.BatchNorm1d(32),
+        self.EHR_proj = nn.Sequential(nn.Linear(512, 32), nn.LeakyReLU(), nn.BatchNorm1d(32),
                                       nn.Linear(32, 64), nn.LeakyReLU(), nn.BatchNorm1d(64),)
 
         self.img_resnet = ResNet18_3D(num_classes=64)   # output dim = 64

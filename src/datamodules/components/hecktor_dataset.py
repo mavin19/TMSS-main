@@ -20,6 +20,8 @@ from sklearn.preprocessing import scale
 
 from torchmtlr.utils import make_time_bins, encode_survival
 
+import clip
+
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('max_colwidth', 2000)
@@ -83,7 +85,7 @@ class HecktorDataset(Dataset):
         
         self.cache_path = get_paths_to_patient_files(cache_dir, self.clinical_data['name'])
         self.clinical_data = self.remove_non_existing_dataset(self.clinical_data, self.cache_path)
-        # self.clinical_data_embedded = self.embedd_clinical_data_with_clip(self.clinical_data)
+        self.clinical_data_embedded = self.embedd_clinical_data_with_clip(self.clinical_data)
         
         self.time_bins = make_time_bins(times=self.clinical_data["time"], num_bins=time_bins,
                                         event=self.clinical_data["event"])
@@ -104,6 +106,29 @@ class HecktorDataset(Dataset):
         clinical_data = clinical_data.drop(indexes_to_drop_index)
         
         return clinical_data
+    
+    def embedd_clinical_data_with_clip(self,  clinical_data):
+        device = "cpu"
+        # device = "cuda" if torch.cuda.is_available() else "cpu"
+        clip_embedding, _ = clip.load('ViT-B/32', device)
+
+        descriptions = []
+        clinical_data = clinical_data.drop(['name','time', 'event'], axis=1)
+
+        column_names = clinical_data.columns
+        
+        for index, row in clinical_data.iterrows():
+            row_description = []
+            for column_name in column_names:
+                value = row[column_name]
+                row_description.append(f"{value}")
+            
+            print(f"row_description length {len(row_description)}")
+            descriptions.append(" ".join(row_description))
+
+        # print("CLINIC_DATA ", descriptions)
+        with torch.no_grad():
+            return clip_embedding.encode_text(clip.tokenize(descriptions, truncate=True).to(device))
 
     def make_data(self, path):
 
@@ -217,7 +242,9 @@ class HecktorDataset(Dataset):
         except:  # test data
             clin_var_data = self.clinical_data.drop(['name'], axis=1)
 
-        clin_var = clin_var_data.iloc[idx].to_numpy(dtype='float32')
+        # clin_var = clin_var_data.iloc[idx].to_numpy(dtype='float32')
+        # Use clip
+        clin_var = self.clinical_data_embedded[idx]
         
         target = self.y[idx]
 

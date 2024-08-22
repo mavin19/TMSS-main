@@ -44,7 +44,7 @@ name: "default"
 
 
 
-ckpt_path:  "/home/koung/Main-TMSS/TMSS_code/logs/experiments/runs/default/2024-08-20_22-33-44/checkpoints/epoch_056.ckpt"
+ckpt_path:  "/home/koung/TMSS-main/logs/experiments/runs/default/2024-08-21_23-17-41/checkpoints/epoch_010.ckpt"
 
 
 
