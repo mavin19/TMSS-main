@@ -72,7 +72,9 @@ class HecktorDataset(Dataset):
                  transform: Optional[Callable] = None,
                  num_workers: int = 1
                  ):
-        print(cache_dir)
+        
+        self.clip_model, _ = clip.load('ViT-B/32', "cpu")
+
         self.num_of_seqs = 1  # CT PT !!!
 
         self.root_directory = root_directory
@@ -85,7 +87,7 @@ class HecktorDataset(Dataset):
         
         self.cache_path = get_paths_to_patient_files(cache_dir, self.clinical_data['name'])
         self.clinical_data = self.remove_non_existing_dataset(self.clinical_data, self.cache_path)
-        self.clinical_data_embedded = self.embedd_clinical_data_with_clip(self.clinical_data)
+        self.clinical_build_descriptions = self.embedd_clinical_data_with_clip(self.clinical_data)
         
         self.time_bins = make_time_bins(times=self.clinical_data["time"], num_bins=time_bins,
                                         event=self.clinical_data["event"])
@@ -107,10 +109,7 @@ class HecktorDataset(Dataset):
         
         return clinical_data
     
-    def embedd_clinical_data_with_clip(self,  clinical_data):
-        device = "cpu"
-        # device = "cuda" if torch.cuda.is_available() else "cpu"
-        clip_embedding, _ = clip.load('ViT-B/32', device)
+    def build_clinical_descriptions(self,  clinical_data):
 
         descriptions = []
         clinical_data = clinical_data.drop(['name','time', 'event'], axis=1)
@@ -123,25 +122,18 @@ class HecktorDataset(Dataset):
                 value = row[column_name]
                 row_description.append(f"{value}")
             
-            print(f"row_description length {len(row_description)}")
             descriptions.append(" ".join(row_description))
 
-        # print("CLINIC_DATA ", descriptions)
-        with torch.no_grad():
-            return clip_embedding.encode_text(clip.tokenize(descriptions, truncate=True).to(device))
+        return descriptions
+        # # print("CLINIC_DATA ", descriptions)
+        # with torch.no_grad():
+            # return clip_embedding.encode_text(clip.tokenize(descriptions, truncate=True).to(device))
 
     def make_data(self, path):
 
         df = pd.read_csv(path + '/EC.csv')        
 
-        # try:
-        #    df = pd.read_csv(path + '/before.csv')
-        # except:
-        #    df = path
-
         clinical_data = df
-
-        # clinical_data = clinical_data.rename(columns={"OS": "event", "OS(m)": "time"})
 
         clinical_data["HGB_Before_Treatment"] = scale(clinical_data["HGB_Before_Treatment"])
         clinical_data["HGB_After_Treatment"] = scale(clinical_data["HGB_After_Treatment"])
@@ -162,22 +154,11 @@ class HecktorDataset(Dataset):
                                                 "T", "N", "Supraclavicular_LN", "TNM", "Treatment_Response", "PTV_Dose",
                                                 "GTV_Dose", "Concurrent_Chemotherapy"], drop_first=False, )
 
-        columns_to_drop = [
-            'LC', 'LC_m', 'LRFS', 'LRFS_m', 'OS', 'OS_m',
-            # 'ECOG', 'GTV_Dose', 'PTV_Dose', 'Concurrent_Chemotherapy', 
-            # 'T', 'N', 'Supraclavicular_LN', 'TNM',
-            # 'Treatment_Response', 'HGB_Before_Treatment', 'HGB_After_Treatment', 'MWT_Before_Treatment',
-            # 'MWT_After_Treatment', 'NS_Before_Treatment','NS_After_Treatment'
-        ]
+        columns_to_drop = ['LC', 'LC_m', 'LRFS', 'LRFS_m', 'OS', 'OS_m']
         clinical_data.drop(columns_to_drop, axis=1, inplace=True)
         columns_to_fill = ['Age', 'TL']
         clinical_data[columns_to_fill] = clinical_data[columns_to_fill].fillna(clinical_data[columns_to_fill].mean())
         
-        # clinical_data["Age"] = scale(clinical_data["Age"])
-
-        # print(clinical_data.isna().sum())
-        # sys.exit()
-        print('clinical_data:   ', clinical_data.info())
         return clinical_data
 
     def _prepare_data(self):
@@ -236,15 +217,17 @@ class HecktorDataset(Dataset):
         """
         clin_name = self.clinical_data.iloc[idx]['name']
 
-        try:  # training data
-            # clin_var_data = self.clinical_data.drop(["target_binary", 'time', 'event', 'Study ID'], axis=1) # single event
-            clin_var_data = self.clinical_data.drop(['name', 'event', 'time'], axis=1)
-        except:  # test data
-            clin_var_data = self.clinical_data.drop(['name'], axis=1)
+        # try:  # training data
+        #     # clin_var_data = self.clinical_data.drop(["target_binary", 'time', 'event', 'Study ID'], axis=1) # single event
+        #     clin_var_data = self.clinical_data.drop(['name', 'event', 'time'], axis=1)
+        # except:  # test data
+        #     clin_var_data = self.clinical_data.drop(['name'], axis=1)
 
         # clin_var = clin_var_data.iloc[idx].to_numpy(dtype='float32')
         # Use clip
-        clin_var = self.clinical_data_embedded[idx]
+        # clin_var = self.clinical_data_embedded[idx]
+
+        tokens = self.clip_model.tokenize(self.clinical_build_descriptions[idx], truncate=True).to("cpu")
         
         target = self.y[idx]
 
@@ -286,7 +269,7 @@ class HecktorDataset(Dataset):
         if self.transforms:
             sample = self.transforms(sample)
 
-        return (sample, clin_var), target, labels
+        return (sample, tokens["input_ids"][0]), target, labels
 
     def __len__(self) -> int:
         """Return the length of the dataset."""

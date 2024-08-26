@@ -7,6 +7,7 @@ from torchmtlr import MTLR
 import sys
 from monai.utils import optional_import
 from src.models.unetrpp.resnet import ResNet18_3D, ResNet50_3D
+from src.clip import build_model
 import hydra
 einops, _ = optional_import("einops")
 
@@ -172,6 +173,14 @@ class UNETR_PP(nn.Module):
                                       nn.Linear(32, 64), nn.LeakyReLU(), nn.BatchNorm1d(64),)
 
         self.img_resnet = ResNet18_3D(num_classes=64)   # output dim = 64
+
+        # CLIP
+        # TODO: ADD CLip pretrain path
+        clip_pretrain = ""
+        clip_model = torch.jit.load(clip_pretrain, map_location="cpu")
+        self.clip = build_model(clip_model.state_dict(), word_len).float()
+        self.backbone.requires_grad_(True)
+
         # add nn.Linear   64  -> 64
 
         #------------ word embedding
@@ -227,11 +236,11 @@ class UNETR_PP(nn.Module):
         return x
 
     def forward(self, x_in):
-        img, clin_var = x_in
-        x_in = (img['input'], clin_var)
+        img, input_ids = x_in
+        
+        clin_var = self.clip.encode_text(input_ids)
 
         # print('img shape  ', img['input'].shape)       #  torch.Size([2, 1, 160, 160, 64])
-        # print("clin_var.shape  ", clin_var.shape)    # B, n_clin_var
 
         clin_var_encoder = self.EHR_proj_encoder(clin_var)
         clin_var_encoder = clin_var_encoder.view(-1, 160, 160).unsqueeze(dim=1).unsqueeze(dim=-1).expand_as(img['input'])
