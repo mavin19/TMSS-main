@@ -175,10 +175,11 @@ class UNETR_PP(nn.Module):
         self.img_resnet = ResNet18_3D(num_classes=64)   # output dim = 64
 
         # CLIP
-        # TODO: ADD CLip pretrain path
-        clip_pretrain = ""
-        clip_model = torch.jit.load(clip_pretrain, map_location="cpu")
+        clip_pretrained_name = ""
+        clip_model = torch.jit.load(clip_pretrained_name, map_location="cpu")
+        
         self.clip = build_model(clip_model.state_dict(), word_len).float()
+        
         self.backbone.requires_grad_(True)
 
         # add nn.Linear   64  -> 64

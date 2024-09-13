@@ -87,7 +87,7 @@ class HecktorDataset(Dataset):
         
         self.cache_path = get_paths_to_patient_files(cache_dir, self.clinical_data['name'])
         self.clinical_data = self.remove_non_existing_dataset(self.clinical_data, self.cache_path)
-        self.clinical_build_descriptions = self.embedd_clinical_data_with_clip(self.clinical_data)
+        self.clinical_build_descriptions = self.build_clinical_descriptions(self.clinical_data)
         
         self.time_bins = make_time_bins(times=self.clinical_data["time"], num_bins=time_bins,
                                         event=self.clinical_data["event"])
@@ -125,9 +125,6 @@ class HecktorDataset(Dataset):
             descriptions.append(" ".join(row_description))
 
         return descriptions
-        # # print("CLINIC_DATA ", descriptions)
-        # with torch.no_grad():
-            # return clip_embedding.encode_text(clip.tokenize(descriptions, truncate=True).to(device))
 
     def make_data(self, path):
 
@@ -215,19 +212,10 @@ class HecktorDataset(Dataset):
         tuple of torch.Tensor and int
             The input-target pair.
         """
-        clin_name = self.clinical_data.iloc[idx]['name']
-
-        # try:  # training data
-        #     # clin_var_data = self.clinical_data.drop(["target_binary", 'time', 'event', 'Study ID'], axis=1) # single event
-        #     clin_var_data = self.clinical_data.drop(['name', 'event', 'time'], axis=1)
-        # except:  # test data
-        #     clin_var_data = self.clinical_data.drop(['name'], axis=1)
-
-        # clin_var = clin_var_data.iloc[idx].to_numpy(dtype='float32')
-        # Use clip
-        # clin_var = self.clinical_data_embedded[idx]
 
         tokens = self.clip_model.tokenize(self.clinical_build_descriptions[idx], truncate=True).to("cpu")
+
+        clin_name = self.clinical_data.iloc[idx]['name']
         
         target = self.y[idx]
 
