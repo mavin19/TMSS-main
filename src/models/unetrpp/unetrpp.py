@@ -175,12 +175,12 @@ class UNETR_PP(nn.Module):
         self.img_resnet = ResNet18_3D(num_classes=64)   # output dim = 64
 
         # CLIP
-        clip_pretrained_name = ""
+        clip_pretrained_name = "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
         clip_model = torch.jit.load(clip_pretrained_name, map_location="cpu")
         
         self.clip = build_model(clip_model.state_dict(), word_len).float()
         
-        self.backbone.requires_grad_(True)
+        self.clip.requires_grad_(True)
 
         # add nn.Linear   64  -> 64
 

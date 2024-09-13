@@ -73,7 +73,7 @@ class HecktorDataset(Dataset):
                  num_workers: int = 1
                  ):
         
-        self.clip_model, _ = clip.load('ViT-B/32', "cpu")
+        self.clip_model, _ = clip.load('microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224', "cpu")
 
         self.num_of_seqs = 1  # CT PT !!!
 
@@ -213,7 +213,7 @@ class HecktorDataset(Dataset):
             The input-target pair.
         """
 
-        tokens = self.clip_model.tokenize(self.clinical_build_descriptions[idx], truncate=True).to("cpu")
+        tokens = self.clip_model.tokenize(self.clinical_build_descriptions[idx])
 
         clin_name = self.clinical_data.iloc[idx]['name']
         
